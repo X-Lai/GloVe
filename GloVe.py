@@ -11,7 +11,7 @@ batch_size = 20
 filepath = "short_story.txt"
 alpha = 0.75
 x_max = 2
-iteraters = 20
+iteraters = 3
 lr = 0.001
 print_every = 1
 
@@ -24,16 +24,16 @@ def readfile(filepath):
 
 # input: index array of corpus, size of window, number of words
 # output: matrix X
-def get_X(index_corpus, window_size, num_words):
+def get_X(corpus, window_size, num_words):
     X = np.zeros((num_words, num_words))
-    length = len(index_corpus)
+    length = len(corpus)
     for i in range(length):
         for j in range(1, window_size+1):
-            l = index_corpus[i]
+            l = w_to_i[corpus[i]]
             if i-j >= 0:
-                X[l][index_corpus[i-j]] += 1/j
+                X[l][w_to_i[corpus[i-j]]] += 1/j
             if i+j < length:
-                X[l][index_corpus[i+j]] += 1/j
+                X[l][w_to_i[corpus[i+j]]] += 1/j
     return X
 
 # input: x
@@ -67,6 +67,8 @@ def timeSince(start, percent):
 
 
 if __name__ == "__main__":
+    # setup cuda
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # read file
     corpus = readfile(filepath)
@@ -79,17 +81,16 @@ if __name__ == "__main__":
     w_to_i = {words[i]: i for i in range(num_words)}
 
     # get X
-    index_corpus = [w_to_i[word] for word in corpus]
-    X = get_X(index_corpus, window_size, num_words)
+    X = get_X(corpus, window_size, num_words)
 
     # get all samples
     samples = np.transpose(np.nonzero(X)) # np.nonzero returns indexes of nonzero elements
     num_samples = len(samples)
     # initialize parameters
-    w1 = torch.rand(num_words, dim, requires_grad=True)
-    w2 = torch.rand(num_words, dim, requires_grad=True)
-    b1 = torch.rand(num_words, requires_grad=True)
-    b2 = torch.rand(num_words, requires_grad=True)
+    w1 = torch.rand(num_words, dim, requires_grad=True, device=device)
+    w2 = torch.rand(num_words, dim, requires_grad=True, device=device)
+    b1 = torch.rand(num_words, requires_grad=True, device=device)
+    b2 = torch.rand(num_words, requires_grad=True, device=device)
 
     # initialize optimizer
     optimizer = optim.Adam([w1, w2, b1, b2], lr=lr)
@@ -97,6 +98,8 @@ if __name__ == "__main__":
     avg_loss = 0
     num_batches = int(num_samples / batch_size)
     start = time.time()
+    print("training begins...")
+
     for it in range(1, iteraters+1):
         for batch in range(num_batches):
             optimizer.zero_grad()
@@ -110,6 +113,7 @@ if __name__ == "__main__":
             avg_loss += loss.item() / num_batches
             loss.backward()
             optimizer.step()
+            #print("ok")
 
         if it % print_every == 0:
             print("%s (%d %d%%) %.4f" % (timeSince(start, it / iteraters),
