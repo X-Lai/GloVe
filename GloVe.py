@@ -11,7 +11,7 @@ batch_size = 20
 filepath = "short_story.txt"
 alpha = 0.75
 x_max = 2
-iteraters = 3
+iteraters = 10
 lr = 0.001
 print_every = 1
 
@@ -25,16 +25,33 @@ def readfile(filepath):
 # input: index array of corpus, size of window, number of words
 # output: matrix X
 def get_X(corpus, window_size, num_words):
-    X = np.zeros((num_words, num_words))
+    X = [{} for i in range(num_words)]
     length = len(corpus)
     for i in range(length):
         for j in range(1, window_size+1):
             l = w_to_i[corpus[i]]
             if i-j >= 0:
-                X[l][w_to_i[corpus[i-j]]] += 1/j
+                r = w_to_i[corpus[i-j]]
+                if r in X[l].keys():
+                    X[l][r] += 1/j
+                else:
+                    X[l][r] = 1/j
             if i+j < length:
-                X[l][w_to_i[corpus[i+j]]] += 1/j
+                r = w_to_i[corpus[i+j]]
+                if r in X[l].keys():
+                    X[l][r] += 1/j
+                else:
+                    X[l][r] = 1/j
     return X
+
+# input: matrix X
+# output: nparray of all samples
+def get_samples(X):
+    samples = []
+    for w1 in range(len(X)):
+        for w2 in X[w1].keys():
+            samples.append((w1, w2))
+    return samples
 
 # input: x
 # output: 1 if x >= x_max, (x / x_max)**alpha if x < x_max
@@ -84,8 +101,10 @@ if __name__ == "__main__":
     X = get_X(corpus, window_size, num_words)
 
     # get all samples
-    samples = np.transpose(np.nonzero(X)) # np.nonzero returns indexes of nonzero elements
+    # samples = np.transpose(np.nonzero(X)) # np.nonzero returns indexes of nonzero elements
+    samples = get_samples(X)
     num_samples = len(samples)
+
     # initialize parameters
     w1 = torch.rand(num_words, dim, requires_grad=True, device=device)
     w2 = torch.rand(num_words, dim, requires_grad=True, device=device)
