@@ -5,7 +5,7 @@ import numpy as np
 import math
 import time
 
-window_size = 3
+window_size = 1
 dim = 2
 batch_size = 20
 filepath = "short_story.txt"
@@ -15,6 +15,7 @@ iteraters = 10
 lr = 0.001
 print_every = 1
 
+# readfile
 # input: file path
 # output: string array of corpus
 def readfile(filepath):
