@@ -6,12 +6,12 @@ import math
 import time
 
 use_text8 = False
-window_size = 1
-dim = 2
-batch_size = 20
+window_size = 3
+dim = 200
+batch_size = 16
 filepath = "chat.txt"
 alpha = 0.75
-x_max = 100
+x_max = 1000
 iteraters = 10
 lr = 0.001
 print_every = 1
@@ -39,20 +39,12 @@ def get_X(lines, window_size, num_words):
             for j in range(1, window_size+1):
                 l = w_to_i[corpus[i]]
                 if i-j >= 0:
-
-                    if corpus[i] == "你" and corpus[i-j] == "还":
-                        print(corpus[i-j+1])
-
                     r = w_to_i[corpus[i-j]]
                     if r in X[l].keys():
                         X[l][r] += 1/j
                     else:
                         X[l][r] = 1/j
                 if i+j < length:
-
-                    if corpus[i] == "你" and corpus[i+j] == "还":
-                        print(corpus[i+j+1])
-
                     r = w_to_i[corpus[i+j]]
                     if r in X[l].keys():
                         X[l][r] += 1/j
@@ -131,6 +123,8 @@ if __name__ == "__main__":
     samples = get_samples(X)
     num_samples = len(samples)
 
+    print(num_samples)
+
     # initialize parameters
     w1 = torch.rand(num_words, dim, requires_grad=True, device=device)
     w2 = torch.rand(num_words, dim, requires_grad=True, device=device)
@@ -158,11 +152,16 @@ if __name__ == "__main__":
             avg_loss += loss.item() / num_batches
             loss.backward()
             optimizer.step()
+            print("%s (%d %d%%) %.4f" % (timeSince(start, it / iteraters),
+                                         it, it / iteraters *100, avg_loss))
 
         if it % print_every == 0:
             print("%s (%d %d%%) %.4f" % (timeSince(start, it / iteraters),
                                          it, it / iteraters *100, avg_loss))
             avg_loss = 0
 
-    torch.save(w1+w2,"w")
+    torch.save(w1,"w1")
+    torch.save(w2,"w2")
+    torch.save(b1,"b1")
+    torch.save(b2,"b2")
     np.save("words", words)
