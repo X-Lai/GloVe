@@ -23,7 +23,6 @@ class WordsIndexer():
     # input: list text, int min_occurrence
     def __init__(self, text, min_word_occurrence, window_size, oov="oov"):
         self.min_word_occurrence = min_word_occurrence
-        self.window_size = window_size
         self.oov = oov
         self.index_to_word = [oov]
         self.word_to_index = {oov: 0}
@@ -57,8 +56,7 @@ class WordsIndexer():
 # capsule glove data and parameter
 class GloveDataset():
     def __init__(self, text):
-        self.indexer = WordsIndexer(text=text, min_word_occurrence=min_word_occurrence,)
-        self.x_max = x_max
+        self.indexer = WordsIndexer(text=text, min_word_occurrence=min_word_occurrence)
 
         self.l_vecs = torch.load("l_vecs")
         self.r_vecs = torch.load("r_vecs")
