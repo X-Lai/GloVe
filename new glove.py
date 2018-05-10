@@ -16,7 +16,7 @@ dim = 300
 x_max = 100
 alpha = 0.75
 n_epoches = 10
-lr = 0.05
+lr = 0.01
 save_every = 5
 filepath = "text8"
 
@@ -112,10 +112,10 @@ class GloveDataset():
 
     # save parameters as file
     def save(self):
-        torch.save(self.l_vecs, "l_vecs")
-        torch.save(self.r_vecs, "r_vecs")
-        torch.save(self.l_biases, "l_biases")
-        torch.save(self.r_biases, "r_biases")
+        torch.save(self.l_vecs, "l_vecs0.01")
+        torch.save(self.r_vecs, "r_vecs0.01")
+        torch.save(self.l_biases, "l_biases0.01")
+        torch.save(self.r_biases, "r_biases0.01")
 
 # transform time number to string
 # input: int s
