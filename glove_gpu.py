@@ -12,7 +12,7 @@ logging.basicConfig(level=logging.DEBUG, format=FORMAT)
 
 min_word_occurrence = 10
 window_size = 10
-batch_size = 32
+batch_size = 512
 dim = 100
 x_max = 100
 alpha = 0.75
