@@ -21,7 +21,7 @@ filepath = "text8"
 # parse text
 class WordsIndexer():
     # input: list text, int min_occurrence
-    def __init__(self, text, min_word_occurrence, window_size, oov="oov"):
+    def __init__(self, text, min_word_occurrence, oov="oov"):
         self.min_word_occurrence = min_word_occurrence
         self.oov = oov
         self.index_to_word = [oov]
@@ -58,10 +58,10 @@ class GloveDataset():
     def __init__(self, text):
         self.indexer = WordsIndexer(text=text, min_word_occurrence=min_word_occurrence)
 
-        self.l_vecs = torch.load("l_vecs")
-        self.r_vecs = torch.load("r_vecs")
-        self.l_biases = torch.load("l_biases")
-        self.r_biases = torch.load("r_biases")
+        self.l_vecs = torch.load("l_vecs", map_location="cpu")
+        self.r_vecs = torch.load("r_vecs", map_location="cpu")
+        self.l_biases = torch.load("l_biases", map_location="cpu")
+        self.r_biases = torch.load("r_biases", map_location="cpu")
 
 def readfile(filepath):
     with open(filepath) as f:
@@ -86,13 +86,13 @@ def find_top_similary(word, w_to_i, size):
 if __name__ == "__main__":
     text = readfile(filepath)
     data = GloveDataset(text)
-    words = data.indexer.word_to_index
+    words = data.indexer.index_to_word
     np.save("words",np.array(words))
-    w_to_i = data.indexer.index_to_word
+    w_to_i = data.indexer.word_to_index
     w = data.l_vecs.data + data.r_vecs.data
-    s = input()
+    s = input("please input:")
     while s != "0":
         ws = find_top_similary(s, w_to_i, 10)
         for word in ws:
             print(word, similarity(w[w_to_i[word]], w[w_to_i[s]]))
-        s = input()
+        s = input("please input:")

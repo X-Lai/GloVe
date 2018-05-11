@@ -153,7 +153,7 @@ def get_loss(weight, l_vecs, r_vecs, log_covals, l_bias, r_bias):
     return loss.mean()
 
 
-def train_model(data, GloveDataset):
+def train_model(data):
     optimizer = torch.optim.Adam(data.all_params, weight_decay=1e-8)
     optimizer.zero_grad()
     for epoch in tqdm(range(NUM_EPOCH)):
@@ -168,6 +168,12 @@ def train_model(data, GloveDataset):
             loss.backward()
             optimizer.step()
         logging.info("Average loss for epoch %i: %.5f", epoch + 1, avg_loss)
+
+    torch.save(data.L_vecs, "L_vecs_others")
+    torch.save(data.R_vecs, "R_vecs_others")
+    torch.save(data.L_biases, "L_biases_others")
+    torch.save(data.R_biases, "R_biases_others")
+    np.save("words_others",np.array(data.indexer.index_to_word))
 
 
 if __name__ == "__main__":

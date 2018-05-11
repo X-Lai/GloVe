@@ -11,12 +11,12 @@ FORMAT = '%(asctime)-15s %(message)s'
 logging.basicConfig(level=logging.DEBUG, format=FORMAT)
 
 min_word_occurrence = 10
-window_size = 4
-batch_size = 32
-dim = 300
+window_size = 10
+batch_size = 128
+dim = 100
 x_max = 100
 alpha = 0.75
-n_epoches = 10
+n_epoches = 50
 lr = 0.05
 save_every = 5
 filepath = "text8"
@@ -68,6 +68,7 @@ class WordsIndexer():
                 for r in range(1, self.window_size+1):
                     if l+r < length and text[l+r] != self.oov_index:
                         co_occurrence[(self.text[l], self.text[l+r])] += 1 / r
+                        co_occurrence[(self.text[l+r], self.text[l])] += 1 / r
 
         return zip(*[(left, right, value) for (left, right), value in co_occurrence.items()])
 
@@ -148,7 +149,7 @@ def get_loss(l_vecs, r_vecs, l_biases, r_biases, weights, log_co_occurrences):
 
 # train model
 def train(data, n_epoches, batch_size, lr):
-    optimizer = torch.optim.SGD(data.all_params, lr=lr)
+    optimizer = torch.optim.Adagrad(data.all_params, lr=lr)
     optimizer.zero_grad()
     num_batches = int(data.ngrams_size / batch_size)
     start = time.time()
