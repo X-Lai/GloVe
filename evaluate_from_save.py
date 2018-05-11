@@ -1,22 +1,5 @@
-import logging
 import numpy as np
-import nltk
 import torch
-from collections import Counter
-
-FORMAT = '%(asctime)-15s %(message)s'
-logging.basicConfig(level=logging.DEBUG, format=FORMAT)
-
-min_word_occurrence = 10
-window_size = 4
-batch_size = 32
-dim = 300
-x_max = 100
-alpha = 0.75
-n_epoches = 10
-lr = 0.05
-save_every = 5
-filepath = "text8"
 
 # compute two vectors' similarity
 # input: vector w1, vector w2
@@ -34,7 +17,7 @@ def find_top_similary(word, w_to_i, size):
 
 
 if __name__ == "__main__":
-    words = np.load("words")
+    words = np.load("words.npy")
     w_to_i = {word: i for (i,word) in enumerate(words)}
 
     l_vecs = torch.load("l_vecs", map_location="cpu")

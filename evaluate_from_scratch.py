@@ -1,22 +1,10 @@
-import logging
 import numpy as np
 import nltk
 import torch
 from collections import Counter
 
-FORMAT = '%(asctime)-15s %(message)s'
-logging.basicConfig(level=logging.DEBUG, format=FORMAT)
-
 min_word_occurrence = 10
-window_size = 4
-batch_size = 32
-dim = 300
-x_max = 100
-alpha = 0.75
-n_epoches = 10
-lr = 0.05
-save_every = 5
-filepath = "text8"
+filepath = "short_story.txt"
 
 # parse text
 class WordsIndexer():
@@ -87,7 +75,9 @@ if __name__ == "__main__":
     text = readfile(filepath)
     data = GloveDataset(text)
     words = data.indexer.index_to_word
+
     np.save("words",np.array(words))
+
     w_to_i = data.indexer.word_to_index
     w = data.l_vecs.data + data.r_vecs.data
     s = input("please input:")

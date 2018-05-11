@@ -9,3 +9,7 @@ l_vecs
 r_vecs
 text8
 chat.txt
+Glove_others.py
+Glove_use_chat.py
+new glove.py
+new_eval_others.py
